@@ -1,0 +1,7 @@
+name = "DotWAD"
+uuid = "ef6aa129-b8a1-41b3-9607-b81be539a8c5"
+authors = ["Sam Buercklin <sam.buercklin@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
