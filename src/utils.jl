@@ -1,7 +1,3 @@
-function read_byte(io::IO)
-
-end
-
 # Reads an ASCII string of length `n` from the IO stream at location `seekto`
 function read_string(io::IOStream, n, seekto=nothing)
     if !isnothing(seekto)

@@ -4,4 +4,5 @@ authors = ["Sam Buercklin <sam.buercklin@gmail.com>"]
 version = "0.1.0"
 
 [deps]
+DoomBase = "17febc53-4688-40fe-bde2-e033a82cfaef"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
