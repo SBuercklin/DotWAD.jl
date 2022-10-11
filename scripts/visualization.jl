@@ -35,3 +35,16 @@ end
 palette = playpal.palettes[1]
 
 f = visualize_palette(palette)
+
+###############
+#=
+    Patches
+=#
+###############
+patch_idx = findfirst(l -> l.name == "WIOSTK\0\0", ldir)
+
+patch_lump = ldir[patch_idx]
+
+patch = DotWAD.read_PATCH(io, patch_lump.filepos, patch_lump.size)
+
+f = visualize_patch(patch, palette)
