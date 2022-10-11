@@ -58,3 +58,19 @@ function read_PLAYPAL(io::IOStream, offset, npals=14)
     playpal = DoomBase.PLAYPAL(palettes)
     return playpal
 end
+
+function read_PATCH(io::IOStream, offset, dsize)
+    seek(io, offset)
+    PATCH_data = read(io, dsize)
+
+    width, height = reinterpret(UInt16, @view PATCH_data[1:4])
+    leftoff, topoff = reinterpret(Int16, @view PATCH_data[5:8])
+
+    offsets = reinterpret(UInt32, @view PATCH_data[8 .+ (1:4*width)]) 
+
+    cols = Column.(Ref(PATCH_data), offsets)
+
+    coldata = mapreduce(c -> c.data, hcat, cols)
+
+    return DoomBase.PATCH(width, height, leftoff, topoff, coldata)
+end
