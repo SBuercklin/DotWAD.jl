@@ -20,10 +20,10 @@ function Base.show(io::IO, lde::LumpDirEntry)
 	println(io, "Lump POSITION: $(lde.filepos)")
 end
 
-function LumpDirEntry(io::IOStream)
-	filepos = read(io, Int32)
-	sze = read(io, Int32)
-	name = read(io, 8)
+function LumpDirEntry(v::AbstractVector{UInt8})
+	filepos = only(reinterpret(Int32, @view v[1:4]))
+	sze = only(reinterpret(Int32, @view v[5:8]))
+	name = @view v[9:end]
 	return LumpDirEntry(filepos, sze, SVector{8}(name))
 end
 

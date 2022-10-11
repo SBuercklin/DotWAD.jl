@@ -9,9 +9,12 @@ end
 
 # Assumes the IOStream points to the start of the .WAD file/header
 function read_header(io::IOStream)
-    wadtype = read_string(io, 4)
-    nlumps = read(io, Int32)
-    lump_ptr = read(io, Int32)
+    header = read(io, 12)
+    header_ints = reinterpret(Int32, @view header[5:12])
+    
+    wadtype = String(@view header[1:4])
+    nlumps = first(header_ints)
+    lump_ptr = last(header_ints)
 
     return wadtype, nlumps, lump_ptr
 end
@@ -19,7 +22,12 @@ end
 function read_directory(io::IOStream, nlumps, dir_offset)
     seek(io, dir_offset)
 
-    lumpdir = [LumpDirEntry(io) for _ in 1:nlumps]
+    Δ = sizeof(LumpDirEntry)
+
+    # Read the lumpdirectory all at once
+    lumpdir_data = read(io, nlumps * Δ)
+
+    lumpdir = [LumpDirEntry(lumpdir_data[(1:16) .+ (i-1) * Δ]) for i in 1:nlumps]
 
     return lumpdir
 end
