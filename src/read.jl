@@ -31,8 +31,13 @@ function determine_doom_version(lumpnames)
     isd1 = length(filter(m -> !isnothing(m), match.(doom1, lumpnames))) > 0
     isd2 = length(filter(m -> !isnothing(m), match.(doom2, lumpnames))) > 0
 
-    println(isd1)
-    println(isd2)
+    if isd1
+        return "DOOM1"
+    elseif isd2
+        return "DOOM2"
+    else
+        return "UNKNOWN"
+    end
 end
 
 function read_PLAYPAL(io::IOStream, offset, npals=14)
