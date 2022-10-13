@@ -29,15 +29,17 @@ function visualize_palette(p)
     return fig
 end
 
-function visualize_patch(patch, palette)
-    patch_size = size(patch.data)
+function visualize_graphic(
+    graphic, palette, transparency = DoomBase.DOOMCOLOR(UInt8(155), UInt8(0), UInt8(155))
+    )
+    graphic_size = (graphic.height, graphic.width)
 
     fig = Figure()
-    ax = Axis(fig[1,1], aspect = /(reverse(patch_size)...))
+    ax = Axis(fig[1,1], aspect = /(reverse(graphic_size)...))
 
     clear_axes!(ax)
 
-    im_colors = getindex.(Ref(palette.colors), patch.data .+ 1)
+    im_colors = DoomBase.DoomGraphic_to_image(graphic, palette, transparency)
 
     image!(ax, reverse(im_colors'; dims = 2); interpolate = false)
 

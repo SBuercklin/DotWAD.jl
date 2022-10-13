@@ -31,12 +31,11 @@ function Base.getproperty(lde::LumpDirEntry, s::Symbol)
     return s === :name ? String(getfield(lde, :name)) : getfield(lde, s)
 end
 
-struct Post
-    topdelta::UInt8
-    length::UInt8
-    data::Vector{UInt8}
-    unused::NTuple{2, UInt8}
-end
+###############
+#=
+    Post/Column Constructors
+=#
+###############
 
 function Post(v::AbstractVector{UInt8})
     td = v[1]
@@ -48,25 +47,10 @@ function Post(v::AbstractVector{UInt8})
     return Post(td, l, data, (un1, un2))
 end
 
-struct Column
-    data::Vector{UInt8}
-end
-
-function Column(posts::AbstractVector{Post})
-    sort!(posts; by = p -> p.topdelta)
-
-    data = Vector{UInt8}()
-    for p in posts
-        append!(data, p.data)
-    end
-
-    return Column(data)
-end
-
-function Column(data::AbstractVector{UInt8}, offset)
+function Column(data::AbstractVector{UInt8}, offset, height)
     posts = col_data_to_posts(data, offset)
 
-    return Column(posts)
+    return Column(posts, height)
 end
 
 function col_data_to_posts(data::AbstractVector{UInt8}, offset)

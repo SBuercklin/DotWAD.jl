@@ -1,6 +1,7 @@
 module DotWAD
 
 using DoomBase
+using DoomBase: Post, Column, DoomGraphic
 using StaticArrays
 
 export parse_WAD

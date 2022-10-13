@@ -59,18 +59,16 @@ function read_PLAYPAL(io::IOStream, offset, npals=14)
     return playpal
 end
 
-function read_PATCH(io::IOStream, offset, dsize)
+function read_graphic(io::IOStream, offset, dsize)
     seek(io, offset)
-    PATCH_data = read(io, dsize)
+    graphic_data = read(io, dsize)
 
-    width, height = reinterpret(UInt16, @view PATCH_data[1:4])
-    leftoff, topoff = reinterpret(Int16, @view PATCH_data[5:8])
+    width, height = reinterpret(UInt16, @view graphic_data[1:4])
+    leftoff, topoff = reinterpret(Int16, @view graphic_data[5:8])
 
-    offsets = reinterpret(UInt32, @view PATCH_data[8 .+ (1:4*width)]) 
+    offsets = reinterpret(UInt32, @view graphic_data[8 .+ (1:4*width)]) 
 
-    cols = Column.(Ref(PATCH_data), offsets)
+    cols = Column.(Ref(graphic_data), offsets, height)
 
-    coldata = mapreduce(c -> c.data, hcat, cols)
-
-    return DoomBase.PATCH(width, height, leftoff, topoff, coldata)
+    return DoomBase.DoomGraphic(width, height, leftoff, topoff, cols)
 end

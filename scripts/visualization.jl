@@ -14,6 +14,8 @@ include("./scripts/visualization-utils.jl")
 
 WAD_DIR = "./scripts/DOOM1.WAD"
 
+io = open(WAD_DIR, "r")
+
 ###############
 #=
     Get lump directory
@@ -38,13 +40,14 @@ f = visualize_palette(palette)
 
 ###############
 #=
-    Patches
+    Graphics
 =#
 ###############
-patch_idx = findfirst(l -> l.name == "WIOSTK\0\0", ldir)
+gfx_names = ("WIOSTK\0\0", "STFST01\0", "WALL00_1", "MISGB0\0\0")
+gfx_idxs = map(gname -> findfirst(l -> l.name == gname, ldir), gfx_names)
 
-patch_lump = ldir[patch_idx]
+gfx_lumps = getindex.(Ref(ldir), gfx_idxs)
 
-patch = DotWAD.read_PATCH(io, patch_lump.filepos, patch_lump.size)
+gfxs = map(gfx -> DotWAD.read_graphic(io, gfx.filepos, gfx.size), gfx_lumps)
 
-f = visualize_patch(patch, palette)
+f = visualize_graphic(gfxs[4], palette)
