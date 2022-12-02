@@ -72,3 +72,41 @@ function read_graphic(io::IOStream, offset, dsize)
 
     return DoomBase.DoomGraphic(width, height, leftoff, topoff, cols)
 end
+
+function read_linedefs(io::IOStream, offset, dsize)
+    seek(io, offset)
+
+    _linedata = read(io, dsize)
+    linedata = reinterpret(NTuple{7, Int16}, _linedata)
+    lines = map(l -> DoomBase.LineDef(l...), linedata)
+
+    return lines
+end
+
+function read_vertexes(io::IOStream, offset, dsize)
+    seek(io, offset)
+    _vertdata = read(io, dsize)
+    vertdata = reinterpret(NTuple{2, Int16}, _vertdata)
+    verts = map(v -> DoomBase.Vertex(v...), vertdata)
+
+    return verts
+end
+
+function read_segs(io::IOStream, offset, ssize)
+    seek(io, offset)
+    _segdata = read(io, ssize)
+    segdata = reinterpret(NTuple{6,  Int16}, _segdata)
+    segs = map(s -> DoomBase.Seg(s...), segdata)
+
+    return segs
+end
+
+function read_subsectors(io::IOStream, offset, ssize)
+    seek(io, offset)
+    _subdata = read(io, ssize)
+    subdata = reinterpret(NTuple{2, Int16}, _subdata)
+    subsectors = map(s -> DoomBase.Subsector(s...), subdata)
+
+    return subsectors
+
+end
