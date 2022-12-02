@@ -31,7 +31,7 @@ ldir = parse_WAD(WAD_DIR)
 ###############
 playpal_lump = ldir[findfirst(l -> l.name == "PLAYPAL\0", ldir)]
 playpal = open(WAD_DIR, "r") do f
-    return DotWAD.read_PLAYPAL(f, playpal_lump.filepos)    
+    return DotWAD.read_PLAYPAL(f, playpal_lump.filepos)
 end
 
 palette = playpal.palettes[1]
