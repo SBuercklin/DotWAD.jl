@@ -26,3 +26,5 @@ Manifest.toml
 dev/
 **/*.wad
 **/*.WAD
+scripts/Doom-WADS
+scripts/Doom-IWADS
