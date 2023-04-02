@@ -1,18 +1,10 @@
 module DotWAD
 
-using DoomBase
-using DoomBase: Post, Column, DoomGraphic
 using StaticArrays
 
+include("./Vanilla/Vanilla.jl")
+using .Vanilla
+
 export parse_WAD
-
-# Stages of parsing a WAD file
-include("read.jl")
-
-# Useful utilities for reading files
-include("utils.jl")
-
-# Abstractions for parsing
-include("types.jl")
 
 end # module DotWAD
