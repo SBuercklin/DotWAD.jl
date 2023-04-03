@@ -4,4 +4,5 @@ authors = ["Sam Buercklin <sam.buercklin@gmail.com>"]
 version = "0.1.0"
 
 [deps]
+Intervals = "d8418881-c3e1-53bb-8760-2df7ec849ed5"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"

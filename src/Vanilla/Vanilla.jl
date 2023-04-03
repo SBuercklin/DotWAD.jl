@@ -1,6 +1,7 @@
 module Vanilla
 
 using StaticArrays
+using Intervals
 
 struct VanillaParser end
 
@@ -11,6 +12,8 @@ include("types.jl")
 include("parsing.jl")
 
 include("VanillaWAD.jl")
+
+include("utils.jl")
 
 export parse_WAD
 
