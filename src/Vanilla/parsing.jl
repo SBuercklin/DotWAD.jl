@@ -12,9 +12,10 @@ function _parse_WAD(io)
 
     patches = read_patches(io, lump_dir)
 
+    texture1 = read_textures(io, lump_dir, "TEXTURE1")
+    texture2 = read_textures(io, lump_dir, "TEXTURE2")
 
-
-    return VanillaWAD(which_game, wadtype, lump_dir, playpal, colormap, patches)
+    return VanillaWAD(which_game, wadtype, lump_dir, playpal, colormap, patches, texture1, texture2)
 end
 
 # Assumes the IOStream points to the start of the .WAD file/header
@@ -153,6 +154,31 @@ function read_graphic(graphic_data)
     cols = Column.(Ref(graphic_data), offsets, height)
 
     return DoomGraphic(width, height, leftoff, topoff, cols)
+end
+
+# name is either TEXTURE1 or TEXTURE2
+function read_textures(io, patch_lumps, name)
+    patch_lump = find_lump(patch_lumps, name)
+
+    isnothing(patch_lump) && return nothing
+
+    texture_lump_data = read_lump(io, patch_lump)
+
+    N = only(reinterpret(UInt32, texture_lump_data[1:4]))
+    texture_offs = reinterpret(UInt32, texture_lump_data[5:(4*(N+1))])
+
+    textures = map(texture_offs) do off
+        relevant_data = @view texture_lump_data[(off + 1):end]
+        name = SVector{8}(relevant_data[1:8])
+        width, height = reinterpret(UInt16, relevant_data[13:16])
+        num_patches = only(reinterpret(UInt16, relevant_data[21:22]))
+
+        patches = collect(reinterpret(TexturePatch, relevant_data[23:(num_patches * 10 + 22)]))
+
+        return TextureData(name, width, height, num_patches, patches)
+    end
+
+    return Textures(N, texture_offs, textures)
 end
 
 function read_linedefs(io::IOStream, offset, dsize)

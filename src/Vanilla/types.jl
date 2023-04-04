@@ -102,6 +102,10 @@ struct Node
     l_child::Int16
 end
 
+#=
+    More Graphics Stuff
+=#
+
 struct Post
     topdelta::UInt8
     length::UInt8
@@ -175,4 +179,26 @@ struct DoomGraphic
     leftoffset::Int16
     topoffset::Int16
     cols::Vector{Column}
+end
+
+struct TexturePatch
+    xoff::UInt16
+    yoff::UInt16
+    patch_idx::UInt16
+    stepdir::UInt16 # unused
+    colormap::UInt16 # unused
+end
+
+struct TextureData
+    name::SVector{8, UInt8}
+    width::UInt16
+    height::UInt16
+    num_patches::UInt16
+    patches::Vector{TexturePatch}
+end
+
+struct Textures
+    N::UInt32
+    N_textures::Vector{UInt32}
+    texture_data::Vector{TextureData}
 end

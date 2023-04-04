@@ -11,6 +11,14 @@ end
 find_lump_idx(wad::VanillaWAD, lumpname) = find_lump_idx(wad.lumps, lumpname)
 find_lump_idx(lumps, lumpname) = findfirst(isequal(lumpname) ∘ Base.Fix2(getproperty, :name), lumps)
 
+function read_lump(io, lump)
+    pos = lump.filepos
+    lsize = lump.size
+    seek(io, pos)
+
+    return read(io, lsize)
+end
+
 # Returns a Vector of Intervals with each Interval defining the first and last 
 #   location of a set of contiguous bytes to read.
 # We use this to read the patch data in as few reads as possible
