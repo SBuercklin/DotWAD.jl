@@ -1,38 +1,41 @@
 # TODO: Replace this with Pluto notebooks
-
-using DoomBase
 using DotWAD
+using DotWAD.Vanilla: Column, DoomGraphic, Post, Palette
+
+using ColorTypes: RGB, N0f8
 
 using GLMakie
+try
+    using Makie
+    Makie.inline!(true)
+catch e
+    nothing
+end
 
 ###############
 #=
     Setup
 =#
 ###############
-include("./scripts/visualization-utils.jl")
+include(pkgdir(DotWAD, "scripts", "visualization-utils.jl"))
 
-WAD_DIR = "./scripts/DOOM1.WAD"
+WAD_DIR = pkgdir(DotWAD,"scripts", "DOOM1.WAD")
 
-io = open(WAD_DIR, "r")
+wad = parse_WAD(WAD_DIR)
 
 ###############
 #=
     Get lump directory
 =#
 ###############
-# Load the lump directory
-ldir = parse_WAD(WAD_DIR)
+lumps = wad.lumps
 
 ###############
 #=
     Palettes
 =#
 ###############
-playpal_lump = ldir[findfirst(l -> l.name == "PLAYPAL\0", ldir)]
-playpal = open(WAD_DIR, "r") do f
-    return DotWAD.read_PLAYPAL(f, playpal_lump.filepos)
-end
+playpal = wad.PLAYPAL
 
 palette = playpal.palettes[1]
 
@@ -43,11 +46,7 @@ f = visualize_palette(palette)
     Graphics
 =#
 ###############
-gfx_names = ("WIOSTK\0\0", "STFST01\0", "WALL00_1", "MISGB0\0\0")
-gfx_idxs = map(gname -> findfirst(l -> l.name == gname, ldir), gfx_names)
-
-gfx_lumps = getindex.(Ref(ldir), gfx_idxs)
-
+# Visualizes a single patch
 gfxs = map(gfx -> DotWAD.read_graphic(io, gfx.filepos, gfx.size), gfx_lumps)
 
-f = visualize_graphic(gfxs[4], palette)
+f = visualize_graphic(gfxs[122], palette)
