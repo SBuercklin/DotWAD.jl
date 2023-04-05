@@ -84,6 +84,19 @@ end
 
 color_from_palette(pal::Palette, idx) = DOOMCOLOR(pal[idx+1]...)
 
+function visualize_texture(
+    texture, patches, palette, transparency = DOOMCOLOR(UInt8(155), UInt8(0), UInt8(155))
+    )
+    texture_size = (texture.height, texture.width)
+    
+    fig = Figure()
+    ax = Axis(fig[1,1], aspect = /(reverse(texture_size)...))
+
+    clear_axes!(ax)
+
+    return 1  
+end
+
 #=
     Level Visualization
 =#
