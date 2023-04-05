@@ -58,6 +58,11 @@ struct COLORMAP{TV <: SizedVector}
     colormaps::TV
 end
 
+struct PNAMES
+    N::UInt32
+    pnames::Vector{SVector{8,UInt8}}
+end
+
 #=
     Level Geometry
 =#

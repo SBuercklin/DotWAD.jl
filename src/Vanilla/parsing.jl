@@ -10,6 +10,7 @@ function _parse_WAD(io)
     playpal = read_PLAYPAL(io, lump_dir)
     colormap = read_COLORMAP(io, lump_dir)
 
+    pnames = read_PNAMES(io, lump_dir)
     patches = read_patches(io, lump_dir)
 
     texture1 = read_textures(io, lump_dir, "TEXTURE1")
@@ -105,6 +106,23 @@ function read_COLORMAP(io::IOStream, lumpdirs::AbstractVector{LumpDirEntry})
     return read_COLORMAP(io, offset)
 end
 
+function read_PNAMES(io::IOStream, lumpdirs)
+    lump = find_lump(lumpdirs, "PNAMES")
+
+    isnothing(lump) && return nothing
+
+    offset = lump.filepos
+    lumpsize = lump.size
+
+    seek(io, offset)
+    pname_data = read(io, lumpsize)
+
+    N = only(reinterpret(UInt32, @view pname_data[1:4]))
+    pnames = reinterpret(SVector{8, UInt8}, @view pname_data[5:end])
+
+    return PNAMES(N, pnames)
+end
+
 # Right now we assume you have both P_START and P_END, though this is not necessarily
 #   required by Doom
 function read_patches(io::IOStream, lumpdirs)
@@ -118,6 +136,7 @@ function read_patches(io::IOStream, lumpdirs)
     filter!(!iszero ∘ Base.Fix2(getproperty, :size), patch_lumps)
     sort!(patch_lumps; by = Base.Fix2(getproperty, :filepos))
 
+    # TODO: turn this into a dict where we look up the patch by name
     return _read_patches_from_lumps(io, patch_lumps)
 end
 
