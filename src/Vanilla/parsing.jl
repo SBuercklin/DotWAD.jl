@@ -16,7 +16,7 @@ function _parse_WAD(io)
     texture1 = read_textures(io, lump_dir, "TEXTURE1")
     texture2 = read_textures(io, lump_dir, "TEXTURE2")
 
-    return VanillaWAD(which_game, wadtype, lump_dir, playpal, colormap, patches, texture1, texture2)
+    return VanillaWAD(which_game, wadtype, lump_dir, playpal, colormap, pnames, patches, texture1, texture2)
 end
 
 # Assumes the IOStream points to the start of the .WAD file/header

@@ -32,7 +32,7 @@ function LumpDirEntry(v::AbstractVector{UInt8})
 end
 
 function Base.getproperty(lde::LumpDirEntry, s::Symbol)
-    return s === :name ? rstrip(String(getfield(lde, :name)), '\0') : getfield(lde, s)
+    return s === :name ? normalize_byte_name(getfield(lde, :name)) : getfield(lde, s)
 end
 
 #=

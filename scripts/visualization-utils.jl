@@ -1,3 +1,5 @@
+using OffsetArrays
+
 function clear_axes!(ax)
     ax.yticklabelsvisible = false
     ax.xticklabelsvisible = false
@@ -85,7 +87,7 @@ end
 color_from_palette(pal::Palette, idx) = DOOMCOLOR(pal[idx+1]...)
 
 function visualize_texture(
-    texture, patches, palette, transparency = DOOMCOLOR(UInt8(155), UInt8(0), UInt8(155))
+    texture, patch_map, palette, transparency = DOOMCOLOR(UInt8(155), UInt8(0), UInt8(155))
     )
     texture_size = (texture.height, texture.width)
     
@@ -94,7 +96,53 @@ function visualize_texture(
 
     clear_axes!(ax)
 
-    return 1  
+    patches_offset = map(texture.patches) do p_data
+        patch = patch_map[p_data.patch_idx + 1]
+        patch_data = DoomGraphic_to_image(patch, palette, transparency)
+        return OffsetArray(patch_data, (p_data.yoff, p_data.xoff))
+    end
+
+    im_colors = fill(transparency, texture_size)
+
+    for p in patches_offset
+        overwrite_image_with_patch!(im_colors, p)
+    end
+
+    image!(ax, reverse(im_colors'; dims = 2); interpolate = false)
+
+    return fig
+end
+
+function visualize_texture_to_gif(
+    texture, patch_map, palette, transparency = DOOMCOLOR(UInt8(155), UInt8(0), UInt8(155));
+    filename, framerate = 1
+)
+    texture_size = (texture.height, texture.width)
+
+    fig = Figure()
+    ax = Axis(fig[1,1], aspect = /(reverse(texture_size)...))
+
+    clear_axes!(ax)
+
+    patches_offset = map(texture.patches) do p_data
+        patch = patch_map[p_data.patch_idx + 1]
+        patch_data = DoomGraphic_to_image(patch, palette, transparency)
+        return OffsetArray(patch_data, (p_data.yoff, p_data.xoff))
+    end
+
+    im_colors = fill(transparency, texture_size)
+
+    record(fig, filename, 0:length(patches_offset); framerate) do i
+        if i != 0
+            overwrite_image_with_patch!(im_colors, patches_offset[i])
+        end
+        image!(ax, reverse(im_colors'; dims = 2); interpolate = false)
+    end
+end
+
+function overwrite_image_with_patch!(image, patch_offset)
+    overlap_idxs = intersect(CartesianIndices(image), CartesianIndices(patch_offset))
+    image[overlap_idxs] .= patch_offset[overlap_idxs]
 end
 
 #=
